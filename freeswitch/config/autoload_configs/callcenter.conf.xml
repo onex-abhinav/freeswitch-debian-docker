@@ -1,39 +1,42 @@
 <configuration name="callcenter.conf" description="CallCenter">
   <settings>
-    <!--<param name="odbc-dsn" value="dsn:user:pass"/>-->
-    <!--<param name="dbname" value="/dev/shm/callcenter.db"/>-->
-    <!--<param name="cc-instance-id" value="single_box"/>-->
   </settings>
-
+  
   <queues>
-
-    <queue name="support@default">
+    <queue name="support">
       <param name="strategy" value="longest-idle-agent"/>
       <param name="moh-sound" value="$${hold_music}"/>
-      <!--<param name="record-template" value="$${recordings_dir}/${strftime(%Y-%m-%d-%H-%M-%S)}.${destination_number}.${caller_id_number}.${uuid}.wav"/>-->
       <param name="time-base-score" value="system"/>
-      <param name="max-wait-time" value="0"/>
-      <param name="max-wait-time-with-no-agent" value="0"/>
-      <param name="max-wait-time-with-no-agent-time-reached" value="5"/>
-      <param name="tier-rules-apply" value="false"/>
-      <param name="tier-rule-wait-second" value="300"/>
-      <param name="tier-rule-wait-multiply-level" value="true"/>
-      <param name="tier-rule-no-agent-no-wait" value="false"/>
-      <param name="discard-abandoned-after" value="60"/>
-      <param name="abandoned-resume-allowed" value="false"/>
     </queue>
-
+    
+    <queue name="sales">
+      <param name="strategy" value="round-robin"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
+    
+    <queue name="accounts">
+      <param name="strategy" value="ring-all"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
   </queues>
 
-<!-- WARNING: Configuration of XML Agents will be updated into the DB upon restart. -->
-<!-- WARNING: Configuration of XML Tiers will reset the level and position if those were supplied. -->
-<!-- WARNING: Agents and Tiers XML config shouldn't be used in a multi FS shared DB setup (Not currently supported anyway) -->
   <agents>
-    <!--<agent name="1000@default" type="callback" contact="[leg_timeout=10]user/1000@default" status="Available" max-no-answer="3" wrap-up-time="10" reject-delay-time="10" busy-delay-time="60" />-->
+    <agent name="7001" type="callback" contact="user/7001" status="Logged Out"/>
+    <agent name="7002" type="callback" contact="user/7002" status="Logged Out"/>
+    <agent name="7003" type="callback" contact="user/7003" status="Logged Out"/>
   </agents>
-  <tiers>
-    <!-- If no level or position is provided, they will default to 1.  You should do this to keep db value on restart. -->
-    <!-- <tier agent="1000@default" queue="support@default" level="1" position="1"/> -->
-  </tiers>
 
-</configuration> 
+  <tiers>
+    <tier agent="7001" queue="support" level="1" position="1"/>
+    <tier agent="7001" queue="sales" level="1" position="1"/>
+    <tier agent="7001" queue="accounts" level="1" position="1"/>
+    
+    <tier agent="7002" queue="support" level="1" position="2"/>
+    <tier agent="7002" queue="sales" level="1" position="2"/>
+    <tier agent="7002" queue="accounts" level="1" position="2"/>
+    
+    <tier agent="7003" queue="support" level="1" position="3"/>
+    <tier agent="7003" queue="sales" level="1" position="3"/>
+    <tier agent="7003" queue="accounts" level="1" position="3"/>
+  </tiers>
+</configuration>

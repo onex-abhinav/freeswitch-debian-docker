@@ -1,0 +1,32 @@
+<include>
+  <context name="default">
+    <!-- Direct Queue Routing -->
+    <extension name="support_queue">
+      <condition field="destination_number" expression="^6001$">
+        <action application="answer"/>
+        <action application="callcenter" data="support"/>
+      </condition>
+    </extension>
+
+    <extension name="sales_queue">
+      <condition field="destination_number" expression="^6002$">
+        <action application="answer"/>
+        <action application="callcenter" data="sales"/>
+      </condition>
+    </extension>
+
+    <extension name="accounts_queue">
+      <condition field="destination_number" expression="^6003$">
+        <action application="answer"/>
+        <action application="callcenter" data="accounts"/>
+      </condition>
+    </extension>
+
+    <!-- Direct agent calls -->
+    <extension name="direct_7001">
+      <condition field="destination_number" expression="^7001$">
+        <action application="bridge" data="user/7001"/>
+      </condition>
+    </extension>
+  </context>
+</include>
