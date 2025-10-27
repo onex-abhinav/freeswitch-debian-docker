@@ -1,39 +1,116 @@
-<configuration name="callcenter.conf" description="CallCenter">
+<configuration name="callcenter.conf" description="Call Center">
   <settings>
-    <!--<param name="odbc-dsn" value="dsn:user:pass"/>-->
-    <!--<param name="dbname" value="/dev/shm/callcenter.db"/>-->
-    <!--<param name="cc-instance-id" value="single_box"/>-->
+    <!-- Use SQLite for better performance -->
+    <param name="dbname" value="/dev/shm/callcenter.db"/>
+    <!-- Clear agents on reload for testing -->
+    <param name="truncate-agents-on-load" value="true"/>
+    <param name="truncate-tiers-on-load" value="true"/>
   </settings>
-
+  
   <queues>
-
-    <queue name="support@default">
+    <!-- SBI Queues with different strategies -->
+    <queue name="sbi_sales">
       <param name="strategy" value="longest-idle-agent"/>
       <param name="moh-sound" value="$${hold_music}"/>
-      <!--<param name="record-template" value="$${recordings_dir}/${strftime(%Y-%m-%d-%H-%M-%S)}.${destination_number}.${caller_id_number}.${uuid}.wav"/>-->
       <param name="time-base-score" value="system"/>
-      <param name="max-wait-time" value="0"/>
-      <param name="max-wait-time-with-no-agent" value="0"/>
-      <param name="max-wait-time-with-no-agent-time-reached" value="5"/>
-      <param name="tier-rules-apply" value="false"/>
-      <param name="tier-rule-wait-second" value="300"/>
-      <param name="tier-rule-wait-multiply-level" value="true"/>
-      <param name="tier-rule-no-agent-no-wait" value="false"/>
+      <param name="max-wait-time" value="300"/>
+      <param name="max-wait-time-with-no-agent" value="60"/>
+      <param name="max-wait-time-with-no-agent-time-reached" value="10"/>
       <param name="discard-abandoned-after" value="60"/>
       <param name="abandoned-resume-allowed" value="false"/>
     </queue>
+    
+    <queue name="sbi_marketing">
+      <param name="strategy" value="round-robin"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+      <param name="time-base-score" value="queue"/>
+      <param name="max-wait-time" value="300"/>
+    </queue>
+    
+    <queue name="sbi_accounts">
+      <param name="strategy" value="ring-all"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+      <param name="time-base-score" value="system"/>
+      <param name="ring-progressively-delay" value="5"/>
+    </queue>
 
+    <!-- HDFC Queues -->
+    <queue name="hdfc_sales">
+      <param name="strategy" value="agent-with-least-talk-time"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+      <param name="time-base-score" value="system"/>
+    </queue>
+    
+    <queue name="hdfc_marketing">
+      <param name="strategy" value="top-down"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
+    
+    <queue name="hdfc_accounts">
+      <param name="strategy" value="sequentially-by-agent-order"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
+
+    <!-- AXIS Queues -->
+    <queue name="axis_sales">
+      <param name="strategy" value="random"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
+    
+    <queue name="axis_marketing">
+      <param name="strategy" value="agent-with-fewest-calls"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+    </queue>
+    
+    <queue name="axis_accounts">
+      <param name="strategy" value="ring-progressively"/>
+      <param name="moh-sound" value="$${hold_music}"/>
+      <param name="ring-progressively-delay" value="8"/>
+    </queue>
   </queues>
 
-<!-- WARNING: Configuration of XML Agents will be updated into the DB upon restart. -->
-<!-- WARNING: Configuration of XML Tiers will reset the level and position if those were supplied. -->
-<!-- WARNING: Agents and Tiers XML config shouldn't be used in a multi FS shared DB setup (Not currently supported anyway) -->
+  <!-- Agents Configuration -->
   <agents>
-    <!--<agent name="1000@default" type="callback" contact="[leg_timeout=10]user/1000@default" status="Available" max-no-answer="3" wrap-up-time="10" reject-delay-time="10" busy-delay-time="60" />-->
+    <!-- SBI Agents -->
+    <agent name="agent7001" type="callback" contact="[leg_timeout=15]user/agent7001" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
+    <agent name="agent7002" type="callback" contact="[leg_timeout=15]user/agent7002" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
+    
+    <!-- HDFC Agents -->
+    <agent name="agent8001" type="callback" contact="[leg_timeout=15]user/agent8001" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
+    <agent name="agent8002" type="callback" contact="[leg_timeout=15]user/agent8002" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
+    
+    <!-- AXIS Agents -->
+    <agent name="agent9001" type="callback" contact="[leg_timeout=15]user/agent9001" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
+    <agent name="agent9002" type="callback" contact="[leg_timeout=15]user/agent9002" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="5" busy-delay-time="30" />
   </agents>
-  <tiers>
-    <!-- If no level or position is provided, they will default to 1.  You should do this to keep db value on restart. -->
-    <!-- <tier agent="1000@default" queue="support@default" level="1" position="1"/> -->
-  </tiers>
 
-</configuration> 
+  <!-- Tiers Configuration - Agent to Queue Mapping -->
+  <tiers>
+    <!-- SBI Tiers -->
+    <tier agent="agent7001" queue="sbi_sales" level="1" position="1"/>
+    <tier agent="agent7001" queue="sbi_marketing" level="2" position="1"/>
+    <tier agent="agent7001" queue="sbi_accounts" level="3" position="1"/>
+    
+    <tier agent="agent7002" queue="sbi_sales" level="1" position="2"/>
+    <tier agent="agent7002" queue="sbi_marketing" level="2" position="2"/>
+    <tier agent="agent7002" queue="sbi_accounts" level="3" position="2"/>
+
+    <!-- HDFC Tiers -->
+    <tier agent="agent8001" queue="hdfc_sales" level="1" position="1"/>
+    <tier agent="agent8001" queue="hdfc_marketing" level="1" position="2"/>
+    <tier agent="agent8001" queue="hdfc_accounts" level="1" position="3"/>
+    
+    <tier agent="agent8002" queue="hdfc_sales" level="2" position="1"/>
+    <tier agent="agent8002" queue="hdfc_marketing" level="2" position="2"/>
+    <tier agent="agent8002" queue="hdfc_accounts" level="2" position="3"/>
+
+    <!-- AXIS Tiers -->
+    <tier agent="agent9001" queue="axis_sales" level="1" position="1"/>
+    <tier agent="agent9001" queue="axis_marketing" level="1" position="1"/>
+    <tier agent="agent9001" queue="axis_accounts" level="1" position="1"/>
+    
+    <tier agent="agent9002" queue="axis_sales" level="1" position="2"/>
+    <tier agent="agent9002" queue="axis_marketing" level="1" position="2"/>
+    <tier agent="agent9002" queue="axis_accounts" level="1" position="2"/>
+  </tiers>
+</configuration>

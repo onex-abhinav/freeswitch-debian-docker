@@ -1,5 +1,7 @@
 <configuration name="modules.conf" description="Modules">
   <modules>
+    <!-- Find the modules section and add this line -->
+    <load module="mod_callcenter"/>
     <!-- Loggers (I'd load these first) -->
     <load module="mod_console"/>
     <!-- <load module="mod_graylog2"/> -->

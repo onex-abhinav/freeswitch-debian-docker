@@ -1,0 +1,182 @@
+<include>
+  <!-- Agent Management Context -->
+  <context name="agent_management">
+    
+    <!-- Universal Agent Login - Available Status -->
+    <extension name="universal_agent_login">
+      <condition field="destination_number" expression="^(\d+)login$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="set" data="res=${callcenter_config(agent set status ${agent_id} Available)}"/>
+        <action application="answer"/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_in.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Agent Login Available (On Demand) -->
+    <extension name="universal_agent_login_ondemand">
+      <condition field="destination_number" expression="^(\d+)logindemand$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="set" data="res=${callcenter_config(agent set status ${agent_id} 'Available (On Demand)')}"/>
+        <action application="answer"/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_in.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Universal Agent Logout -->
+    <extension name="universal_agent_logout">
+      <condition field="destination_number" expression="^(\d+)logout$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="set" data="res=${callcenter_config(agent set status ${agent_id} 'Logged Out')}"/>
+        <action application="answer"/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_out.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Agent Set Ready (State to Waiting) -->
+    <extension name="universal_agent_ready">
+      <condition field="destination_number" expression="^(\d+)ready$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="set" data="res=${callcenter_config(agent set state ${agent_id} Waiting)}"/>
+        <action application="answer"/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-agent_set_ready.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Agent Set to Break -->
+    <extension name="universal_agent_break">
+      <condition field="destination_number" expression="^(\d+)break$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="set" data="res=${callcenter_config(agent set status ${agent_id} 'On Break')}"/>
+        <action application="answer"/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-agent_on_break.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Bulk Make All Agents Available -->
+    <extension name="all_agents_available">
+      <condition field="destination_number" expression="^allavailable$">
+        <action application="answer"/>
+        <!-- SBI Agents -->
+        <action application="set" data="res=${callcenter_config(agent set status agent7001 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent7001 Waiting)}"/>
+        <action application="set" data="res=${callcenter_config(agent set status agent7002 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent7002 Waiting)}"/>
+        
+        <!-- HDFC Agents -->
+        <action application="set" data="res=${callcenter_config(agent set status agent8001 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent8001 Waiting)}"/>
+        <action application="set" data="res=${callcenter_config(agent set status agent8002 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent8002 Waiting)}"/>
+        
+        <!-- AXIS Agents -->
+        <action application="set" data="res=${callcenter_config(agent set status agent9001 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent9001 Waiting)}"/>
+        <action application="set" data="res=${callcenter_config(agent set status agent9002 Available)}"/>
+        <action application="set" data="res=${callcenter_config(agent set state agent9002 Waiting)}"/>
+        
+        <action application="playback" data="ivr/ivr-all_agents_available.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Agent Status Check -->
+    <extension name="agent_status_check">
+      <condition field="destination_number" expression="^(\d+)status$">
+        <action application="set" data="agent_id=agent$1"/>
+        <action application="answer"/>
+        <action application="set" data="agent_info=${callcenter_config(agent list ${agent_id})}"/>
+        <action application="playback" data="ivr/ivr-agent_status_is.wav"/>
+        <!-- Here you would parse and speak the agent status -->
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+  </context>
+
+  <!-- Inbound Call Routing Context -->
+  <context name="inbound_calls">
+    
+    <!-- SBI Inbound with Queue Options -->
+    <extension name="sbi_inbound_queues">
+      <condition field="destination_number" expression="^1800123456$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music,origination_caller_id_name,origination_caller_id_number"/>
+        <action application="set" data="cc_moh_override=$${hold_music}"/>
+        <action application="set" data="cc_exit_keys=*"/>
+        
+        <!-- Play welcome message -->
+        <action application="playback" data="ivr/ivr-welcome_to_sbi.wav"/>
+        
+        <!-- Bind digit actions for queue selection -->
+        <action application="bind_digit_action" data="inqueue,1,exec:callcenter,sbi_sales,self"/>
+        <action application="bind_digit_action" data="inqueue,2,exec:callcenter,sbi_marketing,self"/>
+        <action application="bind_digit_action" data="inqueue,3,exec:callcenter,sbi_accounts,self"/>
+        <action application="bind_digit_action" data="inqueue,0,exec:callcenter,sbi_sales,self"/> <!-- Default to sales -->
+        <action application="digit_action_set_realm" data="inqueue"/>
+        
+        <!-- Play IVR menu -->
+        <action application="playback" data="ivr/ivr-please_select_department.wav"/>
+        
+        <!-- Enter generic queue - will be redirected by digit actions -->
+        <action application="callcenter" data="sbi_sales"/>
+        
+        <!-- Fallback if no selection made -->
+        <action application="playback" data="ivr/ivr-no_selection_made.wav"/>
+        <action application="hangup"/>
+      </condition>
+    </extension>
+
+    <!-- Direct Queue Routing for Testing -->
+    <extension name="direct_sbi_sales">
+      <condition field="destination_number" expression="^1800123451$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_sales"/>
+      </condition>
+    </extension>
+
+    <extension name="direct_sbi_marketing">
+      <condition field="destination_number" expression="^1800123452$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_marketing"/>
+      </condition>
+    </extension>
+
+    <extension name="direct_sbi_accounts">
+      <condition field="destination_number" expression="^1800123453$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_accounts"/>
+      </condition>
+    </extension>
+
+    <!-- Similar extensions for HDFC and AXIS -->
+    <extension name="direct_hdfc_sales">
+      <condition field="destination_number" expression="^1800234561$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="hdfc_sales"/>
+      </condition>
+    </extension>
+
+    <extension name="direct_axis_sales">
+      <condition field="destination_number" expression="^1800345671$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="axis_sales"/>
+      </condition>
+    </extension>
+
+  </context>
+</include>

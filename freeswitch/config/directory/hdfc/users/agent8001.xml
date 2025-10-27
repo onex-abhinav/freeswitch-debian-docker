@@ -1,0 +1,18 @@
+<include>
+  <user id="agent8001">
+    <params>
+      <param name="password" value="123456"/>
+      <param name="dial-string" value="{sip_invite_domain=$${domain},presence_id=8001@$${domain}}${sofia_contact(default/8001@$${domain})}"/>
+    </params>
+    <variables>
+      <variable name="user_context" value="hdfc_domain"/>
+      <variable name="accountcode" value="agent8001"/>
+      <variable name="effective_caller_id_name" value="SBI Agent 8001"/>
+      <variable name="effective_caller_id_number" value="8001"/>
+      <!-- Call Center specific variables -->
+      <variable name="cc_agent" value="agent8001"/>
+      <variable name="cc_side" value="agent"/>
+      <variable name="hold_music" value="$${hold_music}"/>
+    </variables>
+  </user>
+</include>

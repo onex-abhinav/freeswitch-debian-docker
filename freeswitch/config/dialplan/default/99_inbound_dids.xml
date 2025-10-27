@@ -1,0 +1,30 @@
+<include>
+  <context name="default">
+    <!-- SBI Marketing Queue -->
+    <extension name="sbi_marketing_direct">
+      <condition field="destination_number" expression="^1800123452$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_marketing"/>
+      </condition>
+    </extension>
+
+    <!-- SBI Sales Queue -->
+    <extension name="sbi_sales_direct">
+      <condition field="destination_number" expression="^1800123451$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_sales"/>
+      </condition>
+    </extension>
+
+    <!-- SBI Accounts Queue -->
+    <extension name="sbi_accounts_direct">
+      <condition field="destination_number" expression="^1800123453$">
+        <action application="answer"/>
+        <action application="set" data="cc_export_vars=hold_music"/>
+        <action application="callcenter" data="sbi_accounts"/>
+      </condition>
+    </extension>
+  </context>
+</include>
