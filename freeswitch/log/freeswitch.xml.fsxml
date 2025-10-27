@@ -71,7 +71,7 @@
   <!--
       This setting is what sets the default domain FreeSWITCH will use if all else fails.
 
-      FreeSWICH will default to 192.168.65.3 unless changed.  Changing this setting does
+      FreeSWICH will default to 10.30.40.87 unless changed.  Changing this setting does
       affect the sip authentication.  Please review conf/directory/default.xml for more
       information on this topic.
   -->
@@ -410,7 +410,7 @@
     -->
     <list name="domains" default="deny">
       <!-- domain= is special it scans the domain from the directory to build the ACL -->
-      <node type="allow" domain="192.168.65.3"/>
+      <node type="allow" domain="10.30.40.87"/>
       <!-- use cidr= if you wish to allow ip ranges to this domains acl. -->
       <!-- <node type="allow" cidr="192.168.0.0/24"/> -->
     </list>
@@ -815,45 +815,33 @@ enum AVColorRange {
 </lists>
 </configuration>
 <configuration name="callcenter.conf" description="CallCenter">
-  <settings>
-    <!--<param name="odbc-dsn" value="dsn:user:pass"/>-->
-    <!--<param name="dbname" value="/dev/shm/callcenter.db"/>-->
-    <!--<param name="cc-instance-id" value="single_box"/>-->
-  </settings>
-
-  <queues>
-
-    <queue name="support@default">
-      <param name="strategy" value="longest-idle-agent"/>
-      <param name="moh-sound" value="local_stream://moh"/>
-      <!--<param name="record-template" value="/var/lib/freeswitch/recordings/${strftime(%Y-%m-%d-%H-%M-%S)}.${destination_number}.${caller_id_number}.${uuid}.wav"/>-->
-      <param name="time-base-score" value="system"/>
-      <param name="max-wait-time" value="0"/>
-      <param name="max-wait-time-with-no-agent" value="0"/>
-      <param name="max-wait-time-with-no-agent-time-reached" value="5"/>
-      <param name="tier-rules-apply" value="false"/>
-      <param name="tier-rule-wait-second" value="300"/>
-      <param name="tier-rule-wait-multiply-level" value="true"/>
-      <param name="tier-rule-no-agent-no-wait" value="false"/>
-      <param name="discard-abandoned-after" value="60"/>
-      <param name="abandoned-resume-allowed" value="false"/>
-    </queue>
-
-  </queues>
-
-<!-- WARNING: Configuration of XML Agents will be updated into the DB upon restart. -->
-<!-- WARNING: Configuration of XML Tiers will reset the level and position if those were supplied. -->
-<!-- WARNING: Agents and Tiers XML config shouldn't be used in a multi FS shared DB setup (Not currently supported anyway) -->
-  <agents>
-    <!--<agent name="1000@default" type="callback" contact="[leg_timeout=10]user/1000@default" status="Available" max-no-answer="3" wrap-up-time="10" reject-delay-time="10" busy-delay-time="60" />-->
-  </agents>
-  <tiers>
-    <!-- If no level or position is provided, they will default to 1.  You should do this to keep db value on restart. -->
-    <!-- <tier agent="1000@default" queue="support@default" level="1" position="1"/> -->
-  </tiers>
-
-</configuration> 
-<configuration name="cdr_csv.conf" description="CDR CSV Format">
+    <settings>
+    </settings>
+    <queues>
+        <queue name="support@default">
+            <param name="strategy" value="top-down"/>
+            <param name="moh-sound" value="local_stream://moh"/>
+            <param name="time-base-score" value="system"/>
+            <param name="max-wait-time" value="0"/>
+            <param name="max-wait-time-with-no-agent" value="0"/>
+            <param name="max-wait-time-with-no-agent-time-reached" value="20"/>
+            <param name="tier-rules-apply" value="false"/>
+            <param name="tier-rule-wait-second" value="300"/>
+            <param name="tier-rule-wait-multiply-level" value="true"/>
+            <param name="tier-rule-no-agent-no-wait" value="false"/>
+            <param name="discard-abandoned-after" value="60"/>
+            <param name="abandoned-resume-allowed" value="false"/>
+        </queue>
+    </queues>
+    <agents>
+        <agent name="101" type="callback" contact="[call_timeout=60]user/101" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="30" busy-delay-time="60" no-answer-delay-time="10" />
+        <agent name="102" type="callback" contact="[call_timeout=60]user/102" status="Logged Out" max-no-answer="3" wrap-up-time="10" reject-delay-time="30" busy-delay-time="60" no-answer-delay-time="10" />
+    </agents>
+    <tiers>
+        <tier agent="101" queue="support@default" level="1" position="1"/>
+        <tier agent="102" queue="support@default" level="1" position="2"/>
+    </tiers>
+</configuration><configuration name="cdr_csv.conf" description="CDR CSV Format">
   <settings>
     <!-- 'cdr-csv' will always be appended to log-base -->
     <!--<param name="log-base" value="/var/log"/>-->
@@ -996,7 +984,7 @@ enum AVColorRange {
 <configuration name="conference.conf" description="Audio Conference">
   <!-- Advertise certain presence on startup . -->
   <advertise>
-    <room name="3001@192.168.65.3" status="FreeSWITCH"/>
+    <room name="3001@10.30.40.87" status="FreeSWITCH"/>
   </advertise>
 
   <!-- These are the default keys that map when you do not specify a caller control group -->	
@@ -1030,7 +1018,7 @@ enum AVColorRange {
       <!-- <param name="cdr-log-dir" value="auto"/> -->
 
       <!-- Domain (for presence) -->
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <!-- Sample Rate-->
       <param name="rate" value="8000"/>
       <!-- Number of milliseconds per frame -->
@@ -1122,7 +1110,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="wideband">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="16000"/>
       <param name="interval" value="20"/>
       <param name="energy-level" value="100"/>
@@ -1147,7 +1135,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="ultrawideband">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="32000"/>
       <param name="interval" value="20"/>
       <param name="energy-level" value="100"/>
@@ -1186,7 +1174,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="cdquality">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="48000"/>
       <param name="interval" value="20"/>
       <param name="energy-level" value="100"/>
@@ -1221,7 +1209,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="video-mcu-stereo">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="48000"/>
       <param name="channels" value="2"/>
       <param name="interval" value="20"/>
@@ -1257,7 +1245,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="video-mcu-stereo-720">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="48000"/>
       <param name="channels" value="2"/>
       <param name="interval" value="20"/>
@@ -1292,7 +1280,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="video-mcu-stereo-480">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="48000"/>
       <param name="channels" value="2"/>
       <param name="interval" value="20"/>
@@ -1327,7 +1315,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="video-mcu-stereo-320">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="48000"/>
       <param name="channels" value="2"/>
       <param name="interval" value="20"/>
@@ -1362,7 +1350,7 @@ enum AVColorRange {
     </profile>
 
     <profile name="sla">
-      <param name="domain" value="192.168.65.3"/>
+      <param name="domain" value="10.30.40.87"/>
       <param name="rate" value="16000"/>
       <param name="interval" value="20"/>
       <param name="caller-controls" value="none"/>
@@ -1961,7 +1949,7 @@ enum AVColorRange {
 <configuration name="event_socket.conf" description="Socket Client">
   <settings>
     <param name="nat-map" value="false"/>
-    <param name="listen-ip" value="::"/>
+    <param name="listen-ip" value="0.0.0.0"/>
     <param name="listen-port" value="8021"/>
     <param name="password" value="ClueCon"/>
     <!--<param name="apply-inbound-acl" value="loopback.auto"/>-->
@@ -1985,8 +1973,8 @@ enum AVColorRange {
     <param name="delete-all-outbound-member-on-startup" value="false"/>
   </settings>
   <fifos>
-    <fifo name="cool_fifo@192.168.65.3" importance="0">
-      <!--<member timeout="60" simo="1" lag="20">{member_wait=nowait}user/1005@192.168.65.3</member>-->
+    <fifo name="cool_fifo@10.30.40.87" importance="0">
+      <!--<member timeout="60" simo="1" lag="20">{member_wait=nowait}user/1005@10.30.40.87</member>-->
     </fifo>
   </fifos>
 </configuration>
@@ -2303,7 +2291,7 @@ enum AVColorRange {
 
     <!-- The following are the definitions for the digits the user dials -->
     <!-- Digit 1 transfer caller to the public FreeSWITCH conference -->
-    <entry action="menu-exec-app" digits="1" param="bridge sofia/192.168.65.3/888@conference.freeswitch.org"/>
+    <entry action="menu-exec-app" digits="1" param="bridge sofia/10.30.40.87/888@conference.freeswitch.org"/>
     <entry action="menu-exec-app" digits="2" param="transfer 9196 XML default"/>    <!-- FS echo -->
     <entry action="menu-exec-app" digits="3" param="transfer 9664 XML default"/>    <!-- MOH -->
     <entry action="menu-exec-app" digits="4" param="transfer 9191 XML default"/>    <!-- ClueCon -->
@@ -2791,7 +2779,7 @@ SELECT l.digits AS lcr_digits,
 </configuration>
 <configuration name="msrp.conf" description="MSRP">
   <settings>
-    <param name="listen-ip" value="192.168.65.3"/>
+    <param name="listen-ip" value="10.30.40.87"/>
     <!-- <param name="listen-port" value="2855"/> -->
     <!-- <param name="listen-ssl-port" value="2856"/> -->
     <!-- <param name="message-buffer-size" value="50"/> -->
@@ -2860,11 +2848,11 @@ SELECT l.digits AS lcr_digits,
       <!-- <param name="disable-transcoding" value="true"/> -->  <!-- do not transcode, use source channel codec only -->
       <param name="gk-address" value=""/>                        <!-- empty to disable, "*" to search LAN -->
       <param name="gk-identifer" value=""/>                      <!-- optional name of gk -->
-      <param name="gk-interface" value="192.168.65.3"/>       <!-- optional listener interface name -->
+      <param name="gk-interface" value="10.30.40.87"/>       <!-- optional listener interface name -->
    </settings>
    <listeners>
       <listener name="default">
-         <param name="h323-ip" value="192.168.65.3"/>
+         <param name="h323-ip" value="10.30.40.87"/>
          <param name="h323-port" value="1720"/>
       </listener>
    </listeners>
@@ -3233,7 +3221,7 @@ the sip-server-addr and sip-server-port to the oreka server
 </configuration>
 <configuration name="presence_map.conf" description="PRESENCE MAP">
   <domains>
-    <domain name="192.168.65.3">
+    <domain name="10.30.40.87">
       <exten regex="3\d+" proto="conf"/>
     </domain>
   </domains>
@@ -3348,8 +3336,8 @@ the sip-server-addr and sip-server-port to the oreka server
   <profiles>
 <profile name="internal">
   <settings>
-    <param name="domain" value="192.168.65.3"/>
-    <param name="ip" value="192.168.65.3"/>
+    <param name="domain" value="10.30.40.87"/>
+    <param name="ip" value="10.30.40.87"/>
     <param name="port" value="2000"/>
     <param name="patterns-dialplan" value="XML"/>
     <param name="patterns-context" value="skinny-patterns"/>
@@ -3537,10 +3525,10 @@ the sip-server-addr and sip-server-port to the oreka server
     -->
     <!-- Name of the db to use for this profile -->
     <!--<param name="dbname" value="share_presence"/>-->
-    <!--<param name="presence-hosts" value="192.168.65.3"/>-->
-    <!--<param name="force-register-domain" value="192.168.65.3"/>-->
+    <!--<param name="presence-hosts" value="10.30.40.87"/>-->
+    <!--<param name="force-register-domain" value="10.30.40.87"/>-->
     <!--all inbound reg will stored in the db using this domain -->
-    <!--<param name="force-register-db-domain" value="192.168.65.3"/>-->
+    <!--<param name="force-register-db-domain" value="10.30.40.87"/>-->
     <!-- ************************************************* -->
 
     <!--<param name="aggressive-nat-detection" value="true"/>-->
@@ -3551,8 +3539,8 @@ the sip-server-addr and sip-server-port to the oreka server
     <!--
         DO NOT USE HOSTNAMES, ONLY IP ADDRESSES IN THESE SETTINGS!
     -->
-    <param name="rtp-ip" value="fdc4:f303:9324::3"/>
-    <param name="sip-ip" value="fdc4:f303:9324::3"/>
+    <param name="rtp-ip" value="::1"/>
+    <param name="sip-ip" value="::1"/>
     <!-- Shouldn't set these on IPv6 -->
     <!--<param name="ext-rtp-ip" value="auto-nat"/>-->
     <!--<param name="ext-sip-ip" value="auto-nat"/>-->
@@ -3671,10 +3659,10 @@ the sip-server-addr and sip-server-port to the oreka server
     -->
     <!-- Name of the db to use for this profile -->
     <!--<param name="dbname" value="share_presence"/>-->
-    <!--<param name="presence-hosts" value="192.168.65.3"/>-->
-    <!--<param name="force-register-domain" value="192.168.65.3"/>-->
+    <!--<param name="presence-hosts" value="10.30.40.87"/>-->
+    <!--<param name="force-register-domain" value="10.30.40.87"/>-->
     <!--all inbound reg will stored in the db using this domain -->
-    <!--<param name="force-register-db-domain" value="192.168.65.3"/>-->
+    <!--<param name="force-register-db-domain" value="10.30.40.87"/>-->
     <!-- ************************************************* -->
 
     <!--<param name="aggressive-nat-detection" value="true"/>-->
@@ -3685,10 +3673,10 @@ the sip-server-addr and sip-server-port to the oreka server
     <!--
         DO NOT USE HOSTNAMES, ONLY IP ADDRESSES IN THESE SETTINGS!
     -->
-    <param name="rtp-ip" value="192.168.65.3"/>
-    <param name="sip-ip" value="192.168.65.3"/>
-    <param name="ext-rtp-ip" value="27.107.1.210"/>
-    <param name="ext-sip-ip" value="27.107.1.210"/>
+    <param name="rtp-ip" value="10.30.40.87"/>
+    <param name="sip-ip" value="10.30.40.87"/>
+    <param name="ext-rtp-ip" value=""/>
+    <param name="ext-sip-ip" value=""/>
     <param name="rtp-timeout-sec" value="300"/>
     <param name="rtp-hold-timeout-sec" value="1800"/>
     <!--<param name="enable-3pcc" value="true"/>-->
@@ -3742,9 +3730,9 @@ the sip-server-addr and sip-server-port to the oreka server
     <param name="use-rtp-timer" value="true"/>
     <param name="rtp-timer-name" value="soft"/>
     <!-- ip address to use for rtp -->
-    <param name="rtp-ip" value="fdc4:f303:9324::3"/>
+    <param name="rtp-ip" value="::1"/>
     <!-- ip address to bind to -->
-    <param name="sip-ip" value="fdc4:f303:9324::3"/>
+    <param name="sip-ip" value="::1"/>
     <param name="hold-music" value="local_stream://moh"/>
     <!--<param name="enable-100rel" value="false"/>-->
     <!--<param name="disable-srv503" value="true"/>-->
@@ -3818,8 +3806,8 @@ the sip-server-addr and sip-server-port to the oreka server
     <!-- on authed calls, authenticate *all* the packets not just invite -->
     <param name="auth-all-packets" value="false"/>
     <!-- Shouldn't set these on IPv6 -->
-    <!-- <param name="ext-rtp-ip" value="27.107.1.210"/> -->
-    <!-- <param name="ext-sip-ip" value="27.107.1.210"/> -->
+    <!-- <param name="ext-rtp-ip" value=""/> -->
+    <!-- <param name="ext-sip-ip" value=""/> -->
     <!-- rtp inactivity timeout -->
     <param name="rtp-timeout-sec" value="300"/>
     <param name="rtp-hold-timeout-sec" value="1800"/>
@@ -3834,9 +3822,9 @@ the sip-server-addr and sip-server-port to the oreka server
 
     -->
     <!--all inbound reg will look in this domain for the users -->
-    <param name="force-register-domain" value="192.168.65.3"/>
+    <param name="force-register-domain" value="10.30.40.87"/>
     <!--all inbound reg will stored in the db using this domain -->
-    <param name="force-register-db-domain" value="192.168.65.3"/>
+    <param name="force-register-db-domain" value="10.30.40.87"/>
     <!-- disable register and transfer which may be undesirable in a public switch -->
     <!--<param name="disable-transfer" value="true"/>-->
     <!--<param name="disable-register" value="true"/>-->
@@ -3874,7 +3862,7 @@ the sip-server-addr and sip-server-port to the oreka server
 
   <domains>
     <!-- indicator to parse the directory for domains with parse="true" to get gateways-->
-    <!--<domain name="192.168.65.3" parse="true"/>-->
+    <!--<domain name="10.30.40.87" parse="true"/>-->
     <!-- indicator to parse the directory for domains with parse="true" to get gateways and alias every domain to this profile -->
     <!--<domain name="all" alias="true" parse="true"/>-->
     <domain name="all" alias="true" parse="false"/>
@@ -3949,9 +3937,9 @@ the sip-server-addr and sip-server-port to the oreka server
     <param name="outbound-codec-prefs" value="OPUS,G722,PCMU,PCMA,H264,VP8"/>
     <param name="rtp-timer-name" value="soft"/>
     <!-- ip address to use for rtp, DO NOT USE HOSTNAMES ONLY IP ADDRESSES -->
-    <param name="rtp-ip" value="192.168.65.3"/>
+    <param name="rtp-ip" value="10.30.40.87"/>
     <!-- ip address to bind to, DO NOT USE HOSTNAMES ONLY IP ADDRESSES -->
-    <param name="sip-ip" value="192.168.65.3"/>
+    <param name="sip-ip" value="10.30.40.87"/>
     <param name="hold-music" value="local_stream://moh"/>
     <param name="apply-nat-acl" value="nat.auto"/>
 
@@ -4019,7 +4007,7 @@ the sip-server-addr and sip-server-port to the oreka server
     <!-- used to share presence info across sofia profiles -->
     <!-- Name of the db to use for this profile -->
     <!--<param name="dbname" value="share_presence"/>-->
-    <param name="presence-hosts" value="192.168.65.3,192.168.65.3"/>
+    <param name="presence-hosts" value="10.30.40.87,10.30.40.87"/>
     <param name="presence-privacy" value="false"/>
     <!-- ************************************************* -->
 
@@ -4148,8 +4136,8 @@ the sip-server-addr and sip-server-port to the oreka server
          auto                  - Use guessed ip.
          auto-nat              - Use ip learned from NAT-PMP or UPNP
     -->
-    <param name="ext-rtp-ip" value="27.107.1.210"/>
-    <param name="ext-sip-ip" value="27.107.1.210"/>
+    <param name="ext-rtp-ip" value=""/>
+    <param name="ext-sip-ip" value=""/>
 
     <!-- rtp inactivity timeout -->
     <param name="rtp-timeout-sec" value="300"/>
@@ -4165,11 +4153,11 @@ the sip-server-addr and sip-server-port to the oreka server
 
     -->
     <!--all inbound reg will look in this domain for the users -->
-    <param name="force-register-domain" value="192.168.65.3"/>
+    <param name="force-register-domain" value="10.30.40.87"/>
     <!--force the domain in subscriptions to this value -->
-    <param name="force-subscription-domain" value="192.168.65.3"/>
+    <param name="force-subscription-domain" value="10.30.40.87"/>
     <!--all inbound reg will stored in the db using this domain -->
-    <param name="force-register-db-domain" value="192.168.65.3"/>
+    <param name="force-register-db-domain" value="10.30.40.87"/>
 
 
     <!-- for sip over websocket support -->
@@ -5397,9 +5385,9 @@ the sip-server-addr and sip-server-port to the oreka server
 
   <profiles>
     <profile name="default-v4">
-      <param name="bind-local" value="192.168.65.3:8081"/>
-      <param name="bind-local" value="192.168.65.3:8082" secure="true"/>
-      <param name="force-register-domain" value="192.168.65.3"/>
+      <param name="bind-local" value="10.30.40.87:8081"/>
+      <param name="bind-local" value="10.30.40.87:8082" secure="true"/>
+      <param name="force-register-domain" value="10.30.40.87"/>
       <param name="secure-combined" value="/etc/freeswitch/tls/wss.pem"/>
       <param name="secure-chain" value="/etc/freeswitch/tls/wss.pem"/>
       <param name="userauth" value="true"/>
@@ -5407,8 +5395,8 @@ the sip-server-addr and sip-server-port to the oreka server
       <param name="blind-reg" value="false"/>
       <param name="mcast-ip" value="224.1.1.1"/>
       <param name="mcast-port" value="1337"/>
-      <param name="rtp-ip" value="192.168.65.3"/>
-      <param name="ext-rtp-ip" value="27.107.1.210"/>
+      <param name="rtp-ip" value="10.30.40.87"/>
+      <param name="ext-rtp-ip" value=""/>
       <param name="local-network" value="localnet.auto"/>
       <param name="outbound-codec-string" value="opus,h264,vp8"/>
       <param name="inbound-codec-string" value="opus,h264,vp8"/>
@@ -5422,15 +5410,15 @@ the sip-server-addr and sip-server-port to the oreka server
     </profile>
 
     <profile name="default-v6">
-      <param name="bind-local" value="[fdc4:f303:9324::3]:8081"/>
-      <param name="bind-local" value="[fdc4:f303:9324::3]:8082" secure="true"/>
-      <param name="force-register-domain" value="192.168.65.3"/>
+      <param name="bind-local" value="[::1]:8081"/>
+      <param name="bind-local" value="[::1]:8082" secure="true"/>
+      <param name="force-register-domain" value="10.30.40.87"/>
       <param name="secure-combined" value="/etc/freeswitch/tls/wss.pem"/>
       <param name="secure-chain" value="/etc/freeswitch/tls/wss.pem"/>
       <param name="userauth" value="true"/>
       <!-- setting this to true will allow anyone to register even with no account so use with care -->
       <param name="blind-reg" value="false"/>
-      <param name="rtp-ip" value="fdc4:f303:9324::3"/>
+      <param name="rtp-ip" value="::1"/>
       <!--  <param name="ext-rtp-ip" value=""/> -->
       <param name="outbound-codec-string" value="opus,h264,vp8"/>
       <param name="inbound-codec-string" value="opus,h264,vp8"/>
@@ -6042,7 +6030,7 @@ the sip-server-addr and sip-server-port to the oreka server
   <bindings>
     <binding name="example">
       <!-- Allow to bind on a particular IP for requests sent -->
-      <!--<param name="bind-local" value="192.168.65.3" />-->
+      <!--<param name="bind-local" value="10.30.40.87" />-->
       <!-- The url to a gateway cgi that can generate xml similar to
 	   what's in this file only on-the-fly (leave it commented if you dont
 	   need it) -->
@@ -6833,7 +6821,7 @@ the sip-server-addr and sip-server-port to the oreka server
     <extension name="ClueCon">
       <condition field="destination_number" expression="^9191$">
         <action application="set" data="effective_caller_id_name=ClueCon IVR"/>
-        <action application="bridge" data="sofia/192.168.65.3/2000@bkw.org"/>
+        <action application="bridge" data="sofia/10.30.40.87/2000@bkw.org"/>
       </condition>
     </extension>
 
@@ -7099,6 +7087,79 @@ the sip-server-addr and sip-server-port to the oreka server
       </condition>
     </extension>
 
+    <!-- Queue Entry Point -->
+<extension name="support_queue">
+    <condition field="destination_number" expression="^(5000)$">
+        <action application="answer"/>
+        <action application="set" data="caller_id_name=Support Queue" />
+        <action application="callcenter" data="support@default"/>
+    </condition>
+</extension>
+<extension name="test_300">
+    <condition field="destination_number" expression="^300$">
+        <action application="answer"/>
+        <action application="playback" data="ivr/ivr-welcome.wav"/>
+        <action application="hangup"/>
+    </condition>
+</extension>
+
+<!-- Agent Login -->
+<!-- <extension name="agent_login">
+    <condition field="destination_number" expression="^300$">
+        <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Available')}" />
+        <action application="answer" data=""/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_in.wav"/>
+        <action application="hangup" data="NORMAL_CLEARING"/>
+    </condition>
+</extension> -->
+
+<!-- Agent Logout -->
+<extension name="agent_logoff">
+    <condition field="destination_number" expression="^301$">
+        <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Logged Out')}" />
+        <action application="answer" data=""/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_out.wav"/>
+        <action application="hangup" data=""/>
+    </condition>
+</extension>
+```
+
+### 3. **Testing Steps**
+
+**Softphone Setup:**
+- Register **extension 101** on one softphone
+- Register **extension 102** on another softphone
+
+**Step-by-step verification:**
+
+1. **Login agents to queue:**
+   - From extension 101, dial **300** (you'll hear "you are now logged in")
+   - From extension 102, dial **300** (same confirmation)
+
+2. **Verify agent status:**
+```
+   freeswitch@internal callcenter_config agent list
+```
+   You should see agents 101 and 102 with status "Available"
+
+3. **Test inbound call:**
+   - From a third phone (or another extension like 103), dial **5000**
+   - The call should route to agent 101 first (position 1)
+   - If 101 doesn't answer within 60 seconds, it will try agent 102
+
+4. **Verify queue activity:**
+```
+   freeswitch@internal callcenter_config queue list members support@default
+```
+
+### 4. **Reload Configuration**
+After making changes:
+```
+freeswitch@internal reload mod_callcenter
+freeswitch@internal reloadxml
+
   </context>
 <!-- http://wiki.freeswitch.org/wiki/Dialplan_XML -->
   <context name="features">
@@ -7116,7 +7177,7 @@ the sip-server-addr and sip-server-port to the oreka server
      <condition field="destination_number" expression="^att_xfer$">
        <action application="read" data="3 4 'tone_stream://%(10000,0,350,440)' digits 30000 #"/>
        <action application="set" data="origination_cancel_key=#"/>
-       <action application="att_xfer" data="user/${digits}@192.168.65.3"/>
+       <action application="att_xfer" data="user/${digits}@10.30.40.87"/>
      </condition>
     </extension>
 
@@ -7217,11 +7278,11 @@ the sip-server-addr and sip-server-port to the oreka server
 	  target_domain on these calls so they hit the proper domain after you
 	  transfer the caller into the default context.
 
-	  192.168.65.3 is the default domain set from vars.xml but you can set it
+	  10.30.40.87 is the default domain set from vars.xml but you can set it
 	  to any domain you have setup in your user directory.
 
       -->
-      <action application="set" data="domain_name=192.168.65.3"/>
+      <action application="set" data="domain_name=10.30.40.87"/>
       <!-- This example maps the DID 5551212 to ring 1000 in the default context -->
       <action application="transfer" data="1000 XML default"/>
     </condition>
@@ -7339,7 +7400,7 @@ the sip-server-addr and sip-server-port to the oreka server
 -->
 
   <!--the domain or ip (the right hand side of the @ in the addr-->
-  <domain name="192.168.65.3">
+  <domain name="10.30.40.87">
     <params>
       <param name="dial-string" value="{^^:sip_invite_domain=${dialed_domain}:presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(*/${dialed_user}@${dialed_domain})},${verto_contact(${dialed_user}@${dialed_domain})}"/>
       <!-- These are required for Verto to function properly -->
@@ -7681,7 +7742,7 @@ the sip-server-addr and sip-server-port to the oreka server
   </user>
   <!--
       ipauth if you have an cidr= in the user attributes ie cidr="1.2.3.4/32"  
-      see <node type="allow" domain="192.168.65.3"/> in default acl.conf.xml 
+      see <node type="allow" domain="10.30.40.87"/> in default acl.conf.xml 
   -->
   <user id="brian" cidr="192.0.2.0/24">
     <!-- Outbound Registrations Related to this user -->
@@ -7748,7 +7809,7 @@ the sip-server-addr and sip-server-port to the oreka server
       <!--<variable name="max_calls" value="2"/>-->
 
       <!-- send presence information if FS is configured to do so -->
-      <!--<variable name="presence_id" value="1000@192.168.65.3"/>-->
+      <!--<variable name="presence_id" value="1000@10.30.40.87"/>-->
 
       <!-- set these to take advantage of a dialplan localized to this user -->
       <!--<variable name="numbering_plan" value="US"/>-->
@@ -7808,7 +7869,7 @@ the sip-server-addr and sip-server-port to the oreka server
 	<param name="register" value="false"/>
 	<param name="retry-seconds" value="30"/>
 	<param name="extension" value="5000"/>
-	<!--<param name="contact-params" value="domain_name=192.168.65.3"/>-->
+	<!--<param name="contact-params" value="domain_name=10.30.40.87"/>-->
 	<param name="context" value="public"/>
       </gateway>
     </gateways>

@@ -844,5 +844,78 @@
       </condition>
     </extension>
 
+    <!-- Queue Entry Point -->
+<extension name="support_queue">
+    <condition field="destination_number" expression="^(5000)$">
+        <action application="answer"/>
+        <action application="set" data="caller_id_name=Support Queue" />
+        <action application="callcenter" data="support@default"/>
+    </condition>
+</extension>
+<extension name="test_300">
+    <condition field="destination_number" expression="^300$">
+        <action application="answer"/>
+        <action application="playback" data="ivr/ivr-welcome.wav"/>
+        <action application="hangup"/>
+    </condition>
+</extension>
+
+<!-- Agent Login -->
+<!-- <extension name="agent_login">
+    <condition field="destination_number" expression="^300$">
+        <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Available')}" />
+        <action application="answer" data=""/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_in.wav"/>
+        <action application="hangup" data="NORMAL_CLEARING"/>
+    </condition>
+</extension> -->
+
+<!-- Agent Logout -->
+<extension name="agent_logoff">
+    <condition field="destination_number" expression="^301$">
+        <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Logged Out')}" />
+        <action application="answer" data=""/>
+        <action application="sleep" data="500"/>
+        <action application="playback" data="ivr/ivr-you_are_now_logged_out.wav"/>
+        <action application="hangup" data=""/>
+    </condition>
+</extension>
+```
+
+### 3. **Testing Steps**
+
+**Softphone Setup:**
+- Register **extension 101** on one softphone
+- Register **extension 102** on another softphone
+
+**Step-by-step verification:**
+
+1. **Login agents to queue:**
+   - From extension 101, dial **300** (you'll hear "you are now logged in")
+   - From extension 102, dial **300** (same confirmation)
+
+2. **Verify agent status:**
+```
+   freeswitch@internal callcenter_config agent list
+```
+   You should see agents 101 and 102 with status "Available"
+
+3. **Test inbound call:**
+   - From a third phone (or another extension like 103), dial **5000**
+   - The call should route to agent 101 first (position 1)
+   - If 101 doesn't answer within 60 seconds, it will try agent 102
+
+4. **Verify queue activity:**
+```
+   freeswitch@internal callcenter_config queue list members support@default
+```
+
+### 4. **Reload Configuration**
+After making changes:
+```
+freeswitch@internal reload mod_callcenter
+freeswitch@internal reloadxml
+
   </context>
 </include>
