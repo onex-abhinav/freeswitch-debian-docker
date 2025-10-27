@@ -1,0 +1,17 @@
+services:
+  freeswitch:
+    build:
+      context: .
+      args:
+        SIGNALWIRE_TOKEN: ${SIGNALWIRE_TOKEN}
+    container_name: freeswitch
+    restart: unless-stopped
+    cap_add:
+      - SYS_NICE
+    network_mode: "host"
+    volumes:
+      - './freeswitch/config:/etc/freeswitch'
+      - './freeswitch/log:/var/log/freeswitch'
+      - './freeswitch/recordings:/var/lib/freeswitch/recordings'
+    environment:
+      - TZ=Asia/Kolkata

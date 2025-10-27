@@ -1,0 +1,18 @@
+<user id="1000" mailbox="1000">
+  <params>
+    <!-- Strong random password -->
+    <param name="password" value="xR7#9HkLp*32" />
+    <!-- Enable registration -->
+    <param name="vm-password" value="1000" />
+  </params>
+  <variables>
+    <variable name="toll_allow" value="domestic,international,local" />
+    <variable name="accountcode" value="1000" />
+    <variable name="user_context" value="default" />
+    <variable name="effective_caller_id_name" value="Extension 1000" />
+    <variable name="effective_caller_id_number" value="1000" />
+    <variable name="outbound_caller_id_name" value="Company" />
+    <variable name="outbound_caller_id_number" value="1000" />
+    <variable name="callgroup" value="default" />
+  </variables>
+</user>
