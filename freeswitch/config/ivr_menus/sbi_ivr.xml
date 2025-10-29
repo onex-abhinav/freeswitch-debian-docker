@@ -1,0 +1,23 @@
+<include>
+        <menu name="sbi_ivr"
+                greet-long="say:Welcome to One Metric. Press 1 for support, 2 for accounts, 3 for reception or 4 to join a confrence call"
+                greet-short="say:Welcome to One Metric. Press 1 for support, 2 for accounts, 3 for reception or 4 to join a confrence call"
+                invalid-sound="ivr/ivr-that_was_an_invalid_entry.wav"
+                exit-sound="voicemail/vm-goodbye.wav"
+                confirm-macro=""
+                confirm-key=""
+                tts-engine="flite"
+                tts-voice="slt"
+                confirm-attempts="3"
+                timeout="3000"
+                inter-digit-timeout="2000"
+                max-failures="3"
+                max-timeouts="3"
+                digit-len="4">
+
+                <entry action="menu-exec-app" digits="1" param="transfer 450 XML default"/>    <!-- Support -->
+                <entry action="menu-exec-app" digits="2" param="transfer 451 XML default"/>    <!-- Accounts -->
+                <entry action="menu-exec-app" digits="3" param="transfer 452 XML default"/>    <!-- Reception -->
+
+        </menu>
+</include>

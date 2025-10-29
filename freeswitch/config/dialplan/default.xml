@@ -13,6 +13,62 @@
 <include>
   <context name="default">
 
+      <extension name="sbi_ivr_menu">
+            <condition field="destination_number" expression="^4000$">
+            <action application="answer"/>
+            <action application="sleep" data="2000"/>
+            <action application="ivr" data="sbi_ivr"/>
+            </condition>
+      </extension>
+
+        <!-- One Metric Support -->
+      <extension>
+            <condition field="destination_number" expression="^(450)$" break = "true">
+                  <action application="set" data="caller_id_name=SBI Sales" />
+                  <action application="set" data="call_timeout=60" />
+                  <action application="set" data="originate_timeout=60" />
+                  <action application="callcenter" data="sbi_sales@default"/>
+            </condition>
+      </extension>
+
+      <!-- One Metric Accounts -->
+      <extension>
+            <condition field="destination_number" expression="^(451)$" break = "true">
+                  <action application="set" data="caller_id_name=SBI Marketing" />
+                  <action application="callcenter" data="sbi_marketing@default"/>
+            </condition>
+      </extension>
+
+      <!-- One Metric Reception -->
+      <extension>
+            <condition field="destination_number" expression="^(452)$" break = "true">
+                  <action application="set" data="caller_id_name=SBI Accounts" />
+                  <action application="callcenter" data="sbi_accounts@default"/>
+            </condition>
+      </extension>
+
+            <!-- Log Out of the Call Queues -->
+      <extension name="agent_login">
+            <condition field="destination_number" expression="^(453)$" break = "true">
+                  <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Available')}" />
+                  <action application="answer" data=""/>
+                  <action application="sleep" data="500"/>
+                  <action application="playback" data="ivr/ivr-you_are_now_logged_in.wav"/>
+                  <action application="hangup" data="NORMAL_CLEARING"/>
+            </condition>
+      </extension>
+
+      <!-- Log Into the Call Queues -->
+      <extension name="agent_logoff">
+            <condition field="destination_number" expression="^301$" break = "true">
+                  <action application="set" data="res=${callcenter_config(agent set status ${caller_id_number} 'Logged Out')}" />
+                  <action application="answer" data=""/>
+                  <action application="sleep" data="500"/>
+                  <action application="playback" data="ivr/ivr-you_are_now_logged_out.wav"/>
+                  <action application="hangup" data=""/>
+            </condition>
+      </extension>
+
     <extension name="unloop">
       <condition field="${unroll_loops}" expression="^true$"/>
       <condition field="${sip_looped_call}" expression="^true$">
