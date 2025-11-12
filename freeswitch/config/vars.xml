@@ -438,4 +438,9 @@
   <X-PRE-PROCESS cmd="set" data="video_mute_png=$${images_dir}/default-mute.png"/>
   <X-PRE-PROCESS cmd="set" data="video_no_avatar_png=$${images_dir}/default-avatar.png"/>
 
+  <X-PRE-PROCESS cmd="set" data="cdr_enable=true"/>
+  <X-PRE-PROCESS cmd="set" data="enable_json_cdr=true"/>
+  <X-PRE-PROCESS cmd="set" data="cdr_log_all_variables=true"/>
+  <X-PRE-PROCESS cmd="set" data="cdr_include_all_variables=true"/>
+  
 </include>

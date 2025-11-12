@@ -1,6 +1,12 @@
 <configuration name="modules.conf" description="Modules">
   <modules>
     <!-- Find the modules section and add this line -->
+
+    <load module="mod_json_cdr"/>
+    <!-- Also ensure these are loaded -->
+    <load module="mod_cdr_sqlite"/>
+    <load module="mod_odbc_cdr"/>
+
     <load module="mod_callcenter"/>
     <!-- Loggers (I'd load these first) -->
     <load module="mod_console"/>

@@ -13,6 +13,15 @@
 <include>
   <context name="default">
 
+      <extension name="global_cdr" continue="true">
+            <condition>
+                  <!-- Set CDR variables without execute_on_* applications -->
+                  <action application="set" data="cdr_enable=true"/>
+                  <action application="set" data="cdr_include_all_variables=true"/>
+                  <action application="export" data="cdr_include_all_variables=true"/>
+            </condition>
+      </extension>
+
       <extension name="sbi_ivr_menu">
             <condition field="destination_number" expression="^4000$">
             <action application="answer"/>

@@ -1,0 +1,11 @@
+<configuration name="json_cdr.conf" description="JSON CDR Configuration">
+  <settings>
+    <param name="enable" value="true"/>
+    <param name="log-dir" value="/var/log/freeswitch/cdr"/>
+    <param name="file-name" value="cdr.json"/>
+    <param name="rollover" value="daily"/>
+    <param name="include-all-vars" value="true"/>
+    <param name="pretty-print" value="true"/>
+    <param name="timestamp-format" value="iso8601"/>
+  </settings>
+</configuration>

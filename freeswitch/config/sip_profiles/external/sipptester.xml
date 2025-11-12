@@ -1,0 +1,7 @@
+<include>
+  <gateway name="sipptester">
+    <param name="realm" value="10.30.40.77:15001"/>
+    <param name="proxy" value="10.30.40.77:15001"/>
+    <param name="register" value="false"/>
+  </gateway>
+</include>
