@@ -1176,3 +1176,23 @@ bgapi originate {sip_h_X-callId=da1d8360-5612-4237-a387-bef6995995af,sip_h_X-cam
 ```xml
 <node type="allow" cidr="10.30.40.77/24"/>
 ```
+
+# CDR Commands 
+```bash
+
+# Reload JSON CDR module
+fs_cli -x "reload mod_json_cdr"
+
+# Or reload all configurations
+fs_cli -x "reloadxml"
+
+# Reload the JSON CDR module
+fs_cli -x "unload mod_json_cdr"
+fs_cli -x "load mod_json_cdr"
+
+# Check if configuration is applied
+fs_cli -x "show json_cdr"
+
+fs_cli -x "show modules" | grep json_cdr
+
+```
